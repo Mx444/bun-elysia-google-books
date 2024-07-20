@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Explorer</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+      body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 3rem;
+        width: 90%;
+        max-width: 800px;
+      }
+
+      h1 {
+        color: #4a4a4a;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2.5rem;
+        font-weight: 600;
+      }
+
+      .search-form {
+        display: flex;
+        margin-bottom: 2rem;
+      }
+
+      #search-input {
+        flex-grow: 1;
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 50px 0 0 50px;
+        background-color: #f0f0f0;
+        transition: all 0.3s ease;
+      }
+
+      #search-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5);
+      }
+
+      #search-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        background-color: #667eea;
+        color: white;
+        border: none;
+        border-radius: 0 50px 50px 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      #search-button:hover {
+        background-color: #5a6fd6;
+        transform: translateY(-2px);
+      }
+
+      #results {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .book {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .book:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .book img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+      }
+
+      .book h3 {
+        font-size: 1.1rem;
+        margin: 0.5rem 0;
+        color: #4a4a4a;
+      }
+
+      .book p {
+        font-size: 0.9rem;
+        color: #777;
+        margin: 0.25rem 0;
+      }
+
+      .book a {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
+
+      .book a:hover {
+        background-color: #5a6fd6;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Book Explorer</h1>
+      <div class="search-form">
+        <input type="text" id="search-input" placeholder="Discover your next favorite book..." />
+        <button id="search-button">Search</button>
+      </div>
+      <div id="results"></div>
+    </div>
+    <script>
+      document.getElementById("search-button").addEventListener("click", async () => {
+        const query = document.getElementById("search-input").value;
+        if (query) {
+          try {
+            const response = await fetch(
+              `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=12`,
+            );
+            const data = await response.json();
+            displayResults(data.items);
+          } catch (error) {
+            console.error("Error:", error);
+          }
+        }
+      });
+
+      function displayResults(books) {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "";
+        books.forEach((book) => {
+          const bookInfo = book.volumeInfo;
+          const bookElement = document.createElement("div");
+          bookElement.className = "book";
+          bookElement.innerHTML = `
+                <img src="${
+                  bookInfo.imageLinks?.thumbnail || "https://via.placeholder.com/128x192?text=No+Image"
+                }" alt="${bookInfo.title}">
+                <h3>${bookInfo.title}</h3>
+                <p>${bookInfo.authors ? bookInfo.authors.join(", ") : "Unknown Author"}</p>
+                <a href="${bookInfo.infoLink}" target="_blank">More Info</a>
+            `;
+          resultsDiv.appendChild(bookElement);
+        });
+      }
+
+      document.getElementById("search-input").addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+          document.getElementById("search-button").click();
+        }
+      });
+    </script>
+  </body>
+</html>
