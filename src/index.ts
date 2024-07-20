@@ -1,11 +1,27 @@
 import { Elysia, t } from "elysia";
 import cors from "@elysiajs/cors";
+import { swagger } from "@elysiajs/swagger";
+
 import { staticPlugin } from "@elysiajs/static";
 
 const app = new Elysia();
 
 app.use(cors());
 app.use(staticPlugin());
+
+app.use(
+  swagger({
+    path: "/docs",
+    documentation: {
+      info: {
+        title: "API di Libri",
+        version: "1.0.0",
+        description: "Una semplice API che utilizza Google Books API.",
+      },
+      tags: [{ name: "Books", description: "Endpoints correlati ai libri" }],
+    },
+  }),
+);
 
 interface Book {
   title: string;
@@ -67,7 +83,14 @@ app.get(
       return error(500, "Internal error");
     }
   },
-  { params: t.Object({ name: t.String() }) },
+  {
+    params: t.Object({ name: t.String() }),
+    detail: {
+      tags: ["Books"],
+      summary: "Cerca libri per nome",
+      description: "Questo endpoint restituisce una lista di libri in base al nome fornito.",
+    },
+  },
 );
 
 app.listen(3000, () => {
