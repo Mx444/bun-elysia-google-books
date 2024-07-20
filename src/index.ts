@@ -44,7 +44,7 @@ app.get(
     }
 
     try {
-      const url = `https://www.googleapis.com/books/v1/volumes?q=${params.name}`;
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${path}`;
       const response = await fetch(url, { method: "GET" });
       const data: GoogleBooksAPIResponse = await response.json();
 

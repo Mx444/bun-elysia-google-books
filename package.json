@@ -1,6 +1,6 @@
 {
   "name": "bun-elysia-boilerplate",
-  "module": "server.ts",
+  "module": "index.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest"
